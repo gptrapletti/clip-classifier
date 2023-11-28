@@ -1,2 +1,9 @@
 data/
 clip_classifier.egg-info/
+.lightning_studio/
+.aws/
+.git/
+.vscode/
+
+.bashrc
+*.pyc
