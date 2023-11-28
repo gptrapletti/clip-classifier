@@ -9,7 +9,7 @@ class CLIPClassTransforms:
         '''Transforms for the training phase.'''
         transforms = A.Compose([
             ## Resize and padding
-            A.LongestMaxSize(max_size=224, interpolation=3, p=1.0),
+            A.LongestMaxSize(max_size=224, interpolation=3, p=1.0), # ResNet requires 224x224 images (or resnet resizes them itself)
             A.PadIfNeeded(min_height=224, min_width=224, border_mode=0, value=0, mask_value=0, p=1.0),            
             ## Geometric transforms
             A.Affine(
