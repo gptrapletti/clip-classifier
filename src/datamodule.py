@@ -3,10 +3,10 @@ import pytorch_lightning as pl
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
-from src.transforms import CLIPClassTransforms
-from src.dataset import CLIPClassDataset
+from src.transforms import CCTransforms
+from src.dataset import CCDataset
 
-class CLIPClassDataModule(pl.LightningDataModule):
+class CCDataModule(pl.LightningDataModule):
     "Datamodule class."
     def __init__(
         self,
@@ -23,7 +23,7 @@ class CLIPClassDataModule(pl.LightningDataModule):
         self.test_size = 0.15
         self.seed = seed
         self.df = pd.read_csv(gt_path)
-        self.clipclass_transforms = CLIPClassTransforms()
+        self.clipclass_transforms = CCTransforms()
 
     def prepare_data(self):
         """Prepare filepaths and GTs for train, val and test sets. Filepaths are lists of filepath strings,
@@ -54,11 +54,11 @@ class CLIPClassDataModule(pl.LightningDataModule):
     def setup(self, stage):
         '''Creates datasets and dataloaders for the train, val and test phases.'''
         if stage in ['fit', 'train']:
-            self.train_dataset = CLIPClassDataset(filepaths=self.train_filepaths, gts=self.train_gts, transforms=self.clipclass_transforms.train_transforms)
-            self.val_dataset = CLIPClassDataset(filepaths=self.val_filepaths, gts=self.val_gts, transforms=self.clipclass_transforms.test_transforms)
+            self.train_dataset = CCDataset(filepaths=self.train_filepaths, gts=self.train_gts, transforms=self.clipclass_transforms.train_transforms)
+            self.val_dataset = CCDataset(filepaths=self.val_filepaths, gts=self.val_gts, transforms=self.clipclass_transforms.test_transforms)
 
         if stage == 'test':
-            self.test_dataset = CLIPClassDataset(filepaths=self.test_filepaths, gts=self.test_gts, transforms=self.clipclass_transforms.test_transforms)
+            self.test_dataset = CCDataset(filepaths=self.test_filepaths, gts=self.test_gts, transforms=self.clipclass_transforms.test_transforms)
 
         if stage == 'predict':
             raise NotImplementedError("Predicting is not implemented yet.")
@@ -73,8 +73,8 @@ class CLIPClassDataModule(pl.LightningDataModule):
         self.test_dataloader = DataLoader(dataset=self.test_dataset, batch_size=self.batch_size, shuffle=False)
      
 if __name__ == "__main__":
-    from src.datamodule import CLIPClassDataModule
-    dm = CLIPClassDataModule()
+    from src.datamodule import CCDataModule
+    dm = CCDataModule()
     dm.prepare_data()
     dm.setup('train')
     ds = dm.train_dataset

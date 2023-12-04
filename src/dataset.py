@@ -3,7 +3,7 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import Dataset
 
-class CLIPClassDataset(Dataset):
+class CCDataset(Dataset):
     '''Dataset class for CLIP Classifier.'''
     def __init__(self, filepaths, gts, transforms=None):
         self.filepaths = filepaths
