@@ -10,6 +10,7 @@ class CCDataModule(pl.LightningDataModule):
     "Datamodule class."
     def __init__(
         self,
+        encoder_type,
         image_path = 'data/stairs_dataset_20231124',
         gt_path = 'data/stairs_dataset_annotation.csv',
         val_size = 0.2,
@@ -17,13 +18,16 @@ class CCDataModule(pl.LightningDataModule):
         batch_size = 8,
         seed = 42 
     ):
+        super().__init__()
+        self.encoder_type = encoder_type
         self.image_path = image_path
         self.gt_path = gt_path
         self.val_size = 0.2
         self.test_size = 0.15
+        self.batch_size = batch_size
         self.seed = seed
         self.df = pd.read_csv(gt_path)
-        self.clipclass_transforms = CCTransforms()
+        self.clipclass_transforms = CCTransforms(encoder_type=self.encoder_type)
 
     def prepare_data(self):
         """Prepare filepaths and GTs for train, val and test sets. Filepaths are lists of filepath strings,
@@ -54,23 +58,35 @@ class CCDataModule(pl.LightningDataModule):
     def setup(self, stage):
         '''Creates datasets and dataloaders for the train, val and test phases.'''
         if stage in ['fit', 'train']:
-            self.train_dataset = CCDataset(filepaths=self.train_filepaths, gts=self.train_gts, transforms=self.clipclass_transforms.train_transforms)
-            self.val_dataset = CCDataset(filepaths=self.val_filepaths, gts=self.val_gts, transforms=self.clipclass_transforms.test_transforms)
+            self.train_dataset = CCDataset(
+                filepaths=self.train_filepaths, 
+                gts=self.train_gts, 
+                transforms=self.clipclass_transforms.train_transforms
+            )
+            self.val_dataset = CCDataset(
+                filepaths=self.val_filepaths,
+                gts=self.val_gts, 
+                transforms=self.clipclass_transforms.test_transforms
+            )
 
         if stage == 'test':
-            self.test_dataset = CCDataset(filepaths=self.test_filepaths, gts=self.test_gts, transforms=self.clipclass_transforms.test_transforms)
+            self.test_dataset = CCDataset(
+                filepaths=self.test_filepaths, 
+                gts=self.test_gts, 
+                transforms=self.clipclass_transforms.test_transforms
+            )
 
         if stage == 'predict':
             raise NotImplementedError("Predicting is not implemented yet.")
 
     def train_dataloader(self):
-        self.train_dataloader = DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True)
+        return DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=4)
 
     def val_dataloader(self):
-        self.val_dataloader = DataLoader(dataset=self.val_dataset, batch_size=self.batch_size, shuffle=False)
+        return DataLoader(dataset=self.val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=4)
 
     def test_dataloader(self):
-        self.test_dataloader = DataLoader(dataset=self.test_dataset, batch_size=self.batch_size, shuffle=False)
+        return DataLoader(dataset=self.test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=4)
      
 if __name__ == "__main__":
     from src.datamodule import CCDataModule

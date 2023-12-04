@@ -29,7 +29,16 @@ class CCDataset(Dataset):
         'bent' --> [0, 1, 0]
         'straight' --> [0, 0, 1]
         '''
-        label = 0 if gt =='angular' else 1 if gt =='bent' else 2 if gt =='straight' else ValueError
+        if gt == 'angular':
+            label = 0
+        elif gt == 'bent':
+            label = 1
+        elif gt == 'straight':
+            label = 2
+        else:
+            raise ValueError(f"Invalid ground truth label: {gt}")
+
         ohe = F.one_hot(torch.tensor(label), num_classes=3).to(torch.float16)
+
         return ohe
        
