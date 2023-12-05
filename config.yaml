@@ -1,0 +1,7 @@
+encoder: clip
+clip_version: base
+epochs: 1
+lr: 0.001
+run_name: DATETIME_default
+experiment_name: clip-classifier
+ckp_path: checkpoints/DATETIME

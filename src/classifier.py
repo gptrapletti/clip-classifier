@@ -21,11 +21,13 @@ class CCClassifier(nn.Module):
         backbone = nn.Sequential(
             nn.Linear(in_features=self.input_features, out_features=256),
             nn.ReLU(),
+            nn.Dropout(p=0.3),
             nn.Linear(in_features=256, out_features=128),
             nn.ReLU(),
             nn.Dropout(p=0.3),
             nn.Linear(in_features=128, out_features=64),
             nn.ReLU(),
+            nn.Dropout(p=0.3),
             nn.Linear(in_features=64, out_features=3)
         )
 
