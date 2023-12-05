@@ -1,7 +1,7 @@
 encoder: clip
-clip_version: base
-epochs: 1
-lr: 0.001
-run_name: DATETIME_default
+clip_version: large
+epochs: 50
+lr: 0.0001
+run_name: DATETIME_enc:clip-large_clsf:small
 experiment_name: clip-classifier
 ckp_path: checkpoints/DATETIME

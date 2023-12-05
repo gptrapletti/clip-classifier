@@ -3,7 +3,6 @@ import pytorch_lightning as pl
 import torch
 from torchmetrics import Accuracy
 from src.encoder import ResNetEncoder, CLIPEncoder
-from src.classifier import CCClassifier
 
 class CCModule(pl.LightningModule):
     """Module class."""
@@ -70,13 +69,5 @@ class CCModule(pl.LightningModule):
                 'monitor': 'val_loss'
             }
         }
-
-    # def set_encoder(self, encoder_type):
-    #     if encoder_type == 'clip_base':
-    #         self.encoder = CLIPEncoder(version='base')
-    #     elif encoder_type == 'clip_large':
-    #         self.encoder = CLIPEncoder(version='large')
-    #     elif encoder_type == 'resnet':
-    #         self.encoder = ResNetEncoder(pretrained=True, n_layers_to_unfreeze=???)
 
             

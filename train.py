@@ -5,7 +5,7 @@ from datetime import datetime
 import mlflow
 from src.datamodule import CCDataModule
 from src.encoder import CLIPEncoder, ResNetEncoder
-from src.classifier import CCClassifier
+from src.classifier import CCClassifierSmall, CCClassifierLarge
 from src.module import CCModule
 from src.callbacks import get_callbacks
 from src.logger import get_logger
@@ -31,12 +31,12 @@ datamodule = CCDataModule(encoder_type=cfg['encoder'])
 
 print('\nInstantiating encoder')
 if cfg['encoder'] == 'clip':
-    encoder = CLIPEncoder(version=cfg['clip_version'])
+    encoder = CLIPEncoder(version=cfg['clip_version'],  n_layers_to_unfreeze=0)
 elif cfg['encoder'] == 'resnet':
     encoder = ResNetEncoder(pretrained=True, n_layers_to_unfreeze=0)
 
 print('\nInstantiating downstream classifier')
-classifier = CCClassifier(encoder_type=cfg['encoder'])
+classifier = CCClassifierSmall(encoder_type=cfg['encoder'])
 
 print('\nInstantiating Lightning module')
 module = CCModule(encoder=encoder, classifier=classifier, lr=cfg['lr'])
