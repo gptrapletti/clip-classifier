@@ -10,24 +10,24 @@ class CCDataModule(pl.LightningDataModule):
     "Datamodule class."
     def __init__(
         self,
-        encoder_type,
-        image_path = 'data/stairs_dataset_20231124',
-        gt_path = 'data/stairs_dataset_annotation.csv',
-        val_size = 0.2,
-        test_size = 0.15,
-        batch_size = 8,
-        seed = 42 
+        encoder_name,
+        image_path,
+        gt_path,
+        val_size,
+        test_size,
+        batch_size,
+        seed 
     ):
         super().__init__()
-        self.encoder_type = encoder_type
+        self.encoder_name = encoder_name
         self.image_path = image_path
         self.gt_path = gt_path
-        self.val_size = 0.2
-        self.test_size = 0.15
+        self.val_size = val_size
+        self.test_size = test_size
         self.batch_size = batch_size
         self.seed = seed
         self.df = pd.read_csv(gt_path)
-        self.clipclass_transforms = CCTransforms(encoder_type=self.encoder_type)
+        self.clipclass_transforms = CCTransforms(encoder_name=self.encoder_name)
 
     def prepare_data(self):
         """Prepare filepaths and GTs for train, val and test sets. Filepaths are lists of filepath strings,

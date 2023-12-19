@@ -59,8 +59,8 @@ class CCModule(pl.LightningModule):
             mode='min',
             factor=0.1,
             patience=10,
-            threshold=0.01,
-            threshold_mode='abs'
+            threshold=1e-4,
+            threshold_mode='rel'
         )
         return {
             'optimizer': optim, 
@@ -69,5 +69,3 @@ class CCModule(pl.LightningModule):
                 'monitor': 'val_loss'
             }
         }
-
-            

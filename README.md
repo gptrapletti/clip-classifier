@@ -6,3 +6,9 @@ This project aims at exploring the use of the CLIP model (https://arxiv.org/abs/
 ## Dataset
 The dataset comprises images of staircases, representing a specific domain that challenges the capabilities of CLIP as an encoder. It can be downloaded [here](https://drive.google.com/file/d/1R5IoYjMOVfBTw3Afz9mrEHbg_czxAYXO/view?usp=sharing) (access needed). 
 
+## ToDO
+- Add self.save_parameters() to module class.
+- do trainer.predict() on val dataset, saving pdf in run dir.
+- Re-train with new split (and after correction of GT)
+- Replace `instantiate_encoder` function with an encoder class.
+- Add resnet 18.

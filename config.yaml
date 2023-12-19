@@ -1,7 +1,16 @@
-encoder: clip
-clip_version: large
+encoder_name: clip_large # either clip_base, clip_large, resnet_50, resnet_18
+unfreeze: 0
 epochs: 50
-lr: 0.0001
-run_name: DATETIME_enc:clip-large_clsf:small
+lr: 0.001 # clip_base: 0.001, clip_large: 0.0001, resnet_50: 0.001
+
+batch_size: 16
+image_path: data/stairs_dataset_20231124
+gt_path: data/stairs_dataset_annotation.csv
+val_size: 0.15
+test_size: 0.05
+seed: 42 
+
+
+run_name: DATETIME_enc:clip-large_batch:16
 experiment_name: clip-classifier
 ckp_path: checkpoints/DATETIME

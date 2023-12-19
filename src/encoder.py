@@ -35,9 +35,9 @@ class CLIPEncoder(torch.nn.Module):
         return self.model.get_image_features(x)
 
     def get_version(self, version):
-        if version == 'base':
+        if version == 'clip_base':
             return 'openai/clip-vit-base-patch32'
-        elif version == 'large':
+        elif version == 'clip_large':
             return 'openai/clip-vit-large-patch14'
         else:
             raise ValueError('Version not found. Version should be either "base" or "large".')
@@ -52,6 +52,7 @@ class CLIPEncoder(torch.nn.Module):
         for i, param in enumerate(model.parameters()):
             if i in idxs_layers_to_freeze:    
                 param.requires_grad = False 
+
 
 if __name__ == '__main__':
     from src.transforms import CCTransforms

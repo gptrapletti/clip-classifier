@@ -2,16 +2,18 @@ import torch.nn as nn
 from abc import ABC, abstractmethod
 
 class CCClassifierBase(nn.Module, ABC):
-    def __init__(self, encoder_type):
+    def __init__(self, encoder_name):
         super().__init__()
-        self.encoder_type = encoder_type.lower()
+        self.encoder_name = encoder_name
 
-        if self.encoder_type == 'clip':
-            self.input_features = 512                                                               
-        elif self.encoder_type == 'resnet':
+        if self.encoder_name == 'clip_base':
+            self.input_features = 512
+        elif self.encoder_name == 'clip_large':
+            self.input_features = 768                                                               
+        elif self.encoder_name in ['resnet_18', 'resnet_50']:
             self.input_features = 1000
         else:
-            raise ValueError('Encoder type not valid or missing.')
+            raise ValueError('encoder name not valid or missing.')
 
         self.model = self.backbone()
 
@@ -23,8 +25,8 @@ class CCClassifierBase(nn.Module, ABC):
         raise NotImplementedError("This method should be implemented by the subclass")
 
 class CCClassifierLarge(CCClassifierBase):
-    def __init__(self, encoder_type):
-        super().__init__(encoder_type=encoder_type)
+    def __init__(self, encoder_name):
+        super().__init__(encoder_name=encoder_name)
 
     def backbone(self):
         backbone = nn.Sequential(
@@ -42,8 +44,8 @@ class CCClassifierLarge(CCClassifierBase):
         return backbone
     
 class CCClassifierSmall(CCClassifierBase):
-    def __init__(self, encoder_type):
-        super().__init__(encoder_type=encoder_type)
+    def __init__(self, encoder_name):
+        super().__init__(encoder_name=encoder_name)
 
     def backbone(self):
         backbone = nn.Sequential(
@@ -60,12 +62,12 @@ if __name__ == '__main__':
 
     # CLIP
     input = torch.rand(size=[4, 512])
-    classifier = CCClassifier(encoder_type='clip')
+    classifier = CCClassifier(encoder_name='clip')
     output = classifier(input)
     print(f'Test CLIP: {output.shape}')
 
     # ResNet
     input = torch.rand(size=[4, 1000])
-    classifier = CCClassifier(encoder_type='resnet')
+    classifier = CCClassifier(encoder_name='resnet')
     output = classifier(input)
     print(f'Test ResNet: {output.shape}')

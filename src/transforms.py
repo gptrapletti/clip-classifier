@@ -2,20 +2,20 @@ import albumentations as A
 from albumentations.pytorch.transforms import ToTensorV2
 
 class CCTransforms:
-    def __init__(self, encoder_type):
-        self.encoder_type = encoder_type
-        self.normalization_params = self.get_normalization_params(self.encoder_type)
+    def __init__(self, encoder_name):
+        self.encoder_name = encoder_name
+        self.normalization_params = self.get_normalization_params(self.encoder_name)
         self.train_transforms = self.get_train_transforms()
         self.test_transforms = self.get_test_transforms()
 
-    def get_normalization_params(self, encoder_type):
-        if encoder_type.lower() == 'resnet':
+    def get_normalization_params(self, encoder_name):
+        if encoder_name.lower().split('_')[0] == 'resnet':
             return {'mean': [0.485, 0.456, 0.406], 'std': [0.229, 0.224, 0.225]}
-        elif encoder_type.lower() == 'clip':
+        elif encoder_name.lower().split('_')[0] == 'clip':
             # https://github.com/huggingface/transformers/blob/v4.35.2/src/transformers/models/clip/image_processing_clip.py#L173
             return {'mean': [0.48145466, 0.4578275, 0.40821073], 'std': [0.26862954, 0.26130258, 0.27577711]}
         else:
-            raise ValueError("`encoder_type` is either 'resnet' or 'clip'.")
+            raise ValueError("Wrong `encoder_name` argument.")
 
     def get_train_transforms(self):
         '''Transforms for the training phase.'''

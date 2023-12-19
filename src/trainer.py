@@ -7,5 +7,6 @@ def get_trainer(n_epochs, logger, callbacks, compute):
         logger=logger,
         callbacks=callbacks,
         log_every_n_steps=5,
-        gradient_clip_val=0.5
+        gradient_clip_val=0.5,
+        # gradient_clip_algorithm='value',
     )

@@ -7,6 +7,8 @@ data/
 clip_classifier.egg-info/
 mlruns/
 checkpoints/
+lightning_logs/
+output/
 
 .bashrc
 .env
