@@ -1,16 +1,25 @@
-encoder_name: clip_large # either clip_base, clip_large, resnet_50, resnet_18
+encoder_name: resnet_50 # either clip_base, clip_large, resnet_50, resnet_18
 unfreeze: 0
-epochs: 50
+epochs: 3
 lr: 0.001 # clip_base: 0.001, clip_large: 0.0001, resnet_50: 0.001
 
 batch_size: 16
-image_path: data/stairs_dataset_20231124
-gt_path: data/stairs_dataset_annotation.csv
+image_path: data/stairs_dataset_20231219/stairs_dataset
+gt_path: data/stairs_dataset_20231219/stairs_dataset_annotation.csv
 val_size: 0.15
-test_size: 0.05
+test_size: None
 seed: 42 
 
-
-run_name: DATETIME_enc:clip-large_batch:16
+run_name: DATETIME_enc:resnet50_batch:16
 experiment_name: clip-classifier
 ckp_path: checkpoints/DATETIME
+
+compute: gpu
+devices: [2]
+
+scheduler:
+  mode: min
+  factor: 0.1
+  patience: 10
+  threshold: 0.0001
+  threshold_mode: rel

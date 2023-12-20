@@ -1,16 +1,19 @@
 import torch.nn as nn
 import pytorch_lightning as pl
 import torch
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torchmetrics import Accuracy
 from src.encoder import ResNetEncoder, CLIPEncoder
 
 class CCModule(pl.LightningModule):
     """Module class."""
-    def __init__(self, encoder, classifier, lr):
+    def __init__(self, encoder, classifier, lr, scheduler_configs):
         super().__init__()
+        self.save_hyperparameters()
         self.encoder = encoder       
         self.classifier = classifier
         self.lr = lr
+        self.scheduler_configs = scheduler_configs
         self.loss_fn = nn.CrossEntropyLoss()
         self.metric = Accuracy(task='multiclass', num_classes=3)
 
@@ -54,14 +57,7 @@ class CCModule(pl.LightningModule):
 
     def configure_optimizers(self):
         optim = torch.optim.Adam(self.parameters(), lr=self.lr)
-        sched = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            optim,
-            mode='min',
-            factor=0.1,
-            patience=10,
-            threshold=1e-4,
-            threshold_mode='rel'
-        )
+        sched = self.instantiate_scheduler(optimizer=optim, configs=self.scheduler_configs)
         return {
             'optimizer': optim, 
             'lr_scheduler': {
@@ -69,3 +65,6 @@ class CCModule(pl.LightningModule):
                 'monitor': 'val_loss'
             }
         }
+    
+    def instantiate_scheduler(self, optimizer, configs):
+        return ReduceLROnPlateau(optimizer, **configs)

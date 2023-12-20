@@ -36,24 +36,17 @@ class CCDataModule(pl.LightningDataModule):
         filepaths = [os.path.join(self.image_path, fp) for fp in os.listdir(self.image_path)]
         gts = self.df.GT.to_list()
 
-        train_val_filepaths, test_filepaths, train_val_gts, test_gts = train_test_split(
+        train_filepaths, val_filepaths, train_gts, val_gts = train_test_split(
             filepaths,
             gts,
-            test_size=self.test_size,
-            stratify=gts,
-            random_state=self.seed
-        )
-        train_filepaths, val_filepaths, train_gts, val_gts = train_test_split(
-            train_val_filepaths,
-            train_val_gts,
             test_size=self.val_size,
-            stratify=train_val_gts,
+            stratify=gts,
             random_state=self.seed
         )
 
         self.train_filepaths, self.train_gts = train_filepaths, train_gts
         self.val_filepaths, self.val_gts = val_filepaths, val_gts
-        self.test_filepaths, self.test_gts = test_filepaths, test_gts
+        # self.test_filepaths, self.test_gts = test_filepaths, test_gts
 
     def setup(self, stage):
         '''Creates datasets and dataloaders for the train, val and test phases.'''
@@ -70,14 +63,21 @@ class CCDataModule(pl.LightningDataModule):
             )
 
         if stage == 'test':
-            self.test_dataset = CCDataset(
-                filepaths=self.test_filepaths, 
-                gts=self.test_gts, 
-                transforms=self.clipclass_transforms.test_transforms
-            )
+            raise NotImplementedError("Predicting is not implemented yet.")
+        
+            # self.test_dataset = CCDataset(
+            #     filepaths=self.test_filepaths, 
+            #     gts=self.test_gts, 
+            #     transforms=self.clipclass_transforms.test_transforms
+            # )
 
         if stage == 'predict':
-            raise NotImplementedError("Predicting is not implemented yet.")
+            # raise NotImplementedError("Predicting is not implemented yet.")
+            self.predict_val_dataset = CCDataset(
+                filepaths=self.val_filepaths,
+                gts=self.val_gts, 
+                transforms=self.clipclass_transforms.test_transforms
+            )
 
     def train_dataloader(self):
         return DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=4)

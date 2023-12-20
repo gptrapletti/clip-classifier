@@ -48,7 +48,12 @@ print('\nInstantiating downstream classifier')
 classifier = CCClassifierSmall(encoder_name=cfg.encoder_name)
 
 print('\nInstantiating Lightning module')
-module = CCModule(encoder=encoder, classifier=classifier, lr=cfg.lr)
+module = CCModule(
+    encoder=encoder, 
+    classifier=classifier, 
+    lr=cfg.lr, 
+    scheduler_configs=cfg.scheduler,
+)
 
 print('\nInstantiating callbacks and logger')
 callbacks = get_callbacks(ckp_path=cfg.ckp_path)
@@ -69,7 +74,8 @@ trainer = get_trainer(
     n_epochs=cfg.epochs, 
     logger=logger, 
     callbacks=callbacks,
-    compute='gpu' if cuda.is_available() else 'cpu'
+    accelerator=cfg.compute if cuda.is_available() else 'cpu',
+    devices=cfg.devices if cuda.is_available() else None,
 )
 trainer.fit(model=module, datamodule=datamodule)
 
