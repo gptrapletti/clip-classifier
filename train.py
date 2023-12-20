@@ -2,18 +2,14 @@ import os
 import yaml
 import torch.cuda as cuda
 from datetime import datetime
-import mlflow
 from box import Box
-
 from src.datamodule import CCDataModule
-from src.encoder import CLIPEncoder, ResNetEncoder
 from src.classifier import CCClassifierSmall, CCClassifierLarge
 from src.module import CCModule
 from src.callbacks import get_callbacks
 from src.logger import get_logger
 from src.trainer import get_trainer
 from src.utils import instantiate_encoder
-from src.utils import tune_lr
 
 now = datetime.now().strftime('%Y%m%d-%H%M%S')
 
@@ -61,6 +57,7 @@ logger = get_logger(experiment_name=cfg.experiment_name, run_name=cfg.run_name)
 logger.log_hyperparams(cfg)
 
 # print('\nFind best learning rate...')
+# from src.utils import tune_lr
 # trainer = get_trainer(
 #     n_epochs=cfg.epochs, 
 #     logger=logger, 
@@ -74,8 +71,8 @@ trainer = get_trainer(
     n_epochs=cfg.epochs, 
     logger=logger, 
     callbacks=callbacks,
-    accelerator=cfg.compute if cuda.is_available() else 'cpu',
-    devices=cfg.devices if cuda.is_available() else None,
+    compute=cfg.compute if cuda.is_available() else 'cpu',
+    devices=[cfg.devices] if cuda.is_available() else None,
 )
 trainer.fit(model=module, datamodule=datamodule)
 

@@ -87,6 +87,9 @@ class CCDataModule(pl.LightningDataModule):
 
     def test_dataloader(self):
         return DataLoader(dataset=self.test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=4)
+    
+    def predict_dataloader(self):
+        return DataLoader(dataset=self.predict_val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=4)
      
 if __name__ == "__main__":
     from src.datamodule import CCDataModule
