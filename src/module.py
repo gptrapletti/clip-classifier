@@ -1,9 +1,13 @@
 import torch.nn as nn
 import pytorch_lightning as pl
 import torch
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torchmetrics import Accuracy
-from src.encoder import ResNetEncoder, CLIPEncoder
+from tqdm import tqdm
+import cv2
+import os
 
 class CCModule(pl.LightningModule):
     """Module class."""
@@ -82,30 +86,45 @@ class CCModule(pl.LightningModule):
         scheduler = ReduceLROnPlateau(optimizer, **configs)
         return scheduler
     
-    def evaluate(self, datamodule, gpu_id=0):
-        device = f'cuda:{gpu_id}'
+    def evaluate(self, datamodule, device):
+        datamodule.prepare_data()
         datamodule.setup('train')
         dl = datamodule.val_dataloader()
         filepaths = datamodule.val_filepaths
         
-        preds_ls = []
-        gts_ls = []
-        for i, batch in dl:
+        pred_labels, gt_labels = [], []
+        for i, batch in enumerate(dl):
             images, gts = batch
             batch = [images.to(device), gts]
             preds = self.predict_step(batch, i)
-            preds_ls.append(preds.detach())
-            gts_ls.append(gts)
+            pred_labels += torch.argmax(preds, axis=1).detach().cpu().numpy().tolist() # [1, 0, 2, 2, ...]
+            gt_labels += torch.argmax(gts, axis=1).detach().cpu().numpy().tolist()
+
+        correct_predictions_pdf = PdfPages('output/correct_predictions.pdf')
+        wrong_predictions_pdf = PdfPages('output/wrong_predictions.pdf')
+
+        mapping = {0: 'angular', 1: 'bent', 2: 'straight'}
+
+        for path, pred, gt in tqdm(zip(filepaths, pred_labels, gt_labels), total=len(pred_labels)):
+            img = cv2.imread(path)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             
-        pred_labels, gt_labels = [], []
-        for preds, gts in zip(preds_ls, gts_ls):
-            pred_labels += torch.argmax(preds, axis=1).numpy().tolist() # [1, 0, 2, 2, ...]
-            gt_labels += torch.argmax(gts, axis=1).numpy().tolist()
-            
-        # Maybe add the last for-loop in the previous one?
-            
-        pass # TODO: add plotting on pdf
-            
+            plt.figure(figsize=(4, 4))
+            plt.imshow(img)
+            plt.title(os.path.basename(path))
+            plt.axis('off')
+            text = f'GT: {mapping[gt]} - PRED: {mapping[pred]}'
+            plt.figtext(0.5, 0.05, text, ha="center", fontsize=12)
+
+            if pred == gt:
+                correct_predictions_pdf.savefig()
+            else:
+                wrong_predictions_pdf.savefig()
+
+            plt.close()
+
+        correct_predictions_pdf.close()
+        wrong_predictions_pdf.close()
             
             
     

@@ -13,8 +13,7 @@ seed: 42
 run_name: DATETIME_enc:resnet50_batch:16
 experiment_name: clip-classifier
 ckp_path: checkpoints/DATETIME
-# best_ckp_path: checkpoints/20231220-220424/epoch=4.ckpt
-best_ckp_path: checkpoints/20231220-221209/epoch=4.ckpt
+best_ckp_path: checkpoints/20231221-161459/epoch=4.ckpt # DGX
 
 compute: gpu
 devices: 0
