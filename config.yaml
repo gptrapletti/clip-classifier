@@ -1,4 +1,4 @@
-encoder_name: resnet_50 # either clip_base, clip_large, resnet_50, resnet_18
+encoder_name: resnet_50 # clip_base | clip_large | resnet_50
 unfreeze: 0
 epochs: 5
 lr: 0.001 # clip_base: 0.001, clip_large: 0.0001, resnet_50: 0.001
@@ -13,7 +13,8 @@ seed: 42
 run_name: DATETIME_enc:resnet50_batch:16
 experiment_name: clip-classifier
 ckp_path: checkpoints/DATETIME
-best_ckp_path: checkpoints/20231221-161459/epoch=4.ckpt # DGX
+# best_ckp_path: checkpoints/20231221-161459/epoch=4.ckpt # DGX
+best_ckp_path: checkpoints/20231222-224530/epoch=4.ckpt # LEGION
 
 compute: gpu
 devices: 0

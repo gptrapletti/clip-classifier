@@ -73,7 +73,9 @@ class CCDataModule(pl.LightningDataModule):
 
         if stage == 'predict':
             # raise NotImplementedError("Predicting is not implemented yet.")
-            self.predict_val_dataset = CCDataset(
+            # Prediction is done on the validation set
+            self.predict_filepaths = self.val_filepaths
+            self.predict_dataset = CCDataset(
                 filepaths=self.val_filepaths,
                 gts=self.val_gts, 
                 transforms=self.clipclass_transforms.test_transforms
@@ -89,7 +91,7 @@ class CCDataModule(pl.LightningDataModule):
         return DataLoader(dataset=self.test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=4)
     
     def predict_dataloader(self):
-        return DataLoader(dataset=self.predict_val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=4)
+        return DataLoader(dataset=self.predict_dataset, batch_size=self.batch_size, shuffle=False, num_workers=4)
      
 if __name__ == "__main__":
     from src.datamodule import CCDataModule

@@ -13,6 +13,7 @@ This project aims at exploring the use of the CLIP model (https://arxiv.org/abs/
 The dataset comprises images of staircases, representing a specific domain that challenges the capabilities of CLIP as an encoder. It can be downloaded [here](https://drive.google.com/file/d/1R5IoYjMOVfBTw3Afz9mrEHbg_czxAYXO/view?usp=sharing) (access needed). 
 
 ## ToDO
+- Finish predicting via callback (use cfg).
 - Use cfg for evaluate fn. Add confusion matrix and other stats too.
 - Re-train with new split (just train and val) and write results to report.
 - Unfreeze some resnet layers and add to report.
