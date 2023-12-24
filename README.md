@@ -13,6 +13,7 @@ This project aims at exploring the use of the CLIP model (https://arxiv.org/abs/
 The dataset comprises images of staircases, representing a specific domain that challenges the capabilities of CLIP as an encoder. It can be downloaded [here](https://drive.google.com/file/d/1R5IoYjMOVfBTw3Afz9mrEHbg_czxAYXO/view?usp=sharing) (access needed). 
 
 ## ToDO
+- Val dataloader shuffle back to false!
 - Finish predicting via callback (use cfg).
 - Use cfg for evaluate fn. Add confusion matrix and other stats too.
 - Re-train with new split (just train and val) and write results to report.
@@ -20,3 +21,21 @@ The dataset comprises images of staircases, representing a specific domain that 
 - Add text data.
 - Replace `instantiate_encoder` function with an encoder class.
 - Add resnet 18.
+
+
+#### ResNet50 performances on Caltech256 dataset, 3 classes (birds), 65 images per class.
+
+- PRETRAINED: True
+    - n unfrozen layers:
+        - 25: train
+        - 50: train
+        - 65: train but slow and caps at metric ~ 0.70
+        - 75: no train
+        - 100: no train
+
+- PRETRAINED: False
+    - n unfrozen layers:
+        - 25: no train
+        - 50: no train
+        - 75: no train
+        - 100: no train

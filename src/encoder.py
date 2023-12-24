@@ -15,9 +15,14 @@ class ResNetEncoder(torch.nn.Module):
     def freeze_layers(self, model, n_layers_to_unfreeze):
         '''To freeze the layers of a model. The last `n_layers_to_unfreeze` layers remain unfrozen.
         'n_layers_to_unfreeze=0' means freeze all layers, 'n_layers_to_unfreeze=1' means last 1 layer is unfrozen.
+        'n_layers_to_unfreeze=-1` to have all the layers unfrozen.
         '''
         n_tot_layers = len(list(model.parameters()))
-        idxs_layers_to_freeze = list(range(0, n_tot_layers - n_layers_to_unfreeze))
+        
+        if n_layers_to_unfreeze == -1:
+            idxs_layers_to_freeze = []
+        else:
+            idxs_layers_to_freeze = list(range(0, n_tot_layers - n_layers_to_unfreeze))
 
         for i, param in enumerate(model.parameters()):
             if i in idxs_layers_to_freeze:    

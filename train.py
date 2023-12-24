@@ -1,6 +1,6 @@
 import os
 import yaml
-import torch.cuda as cuda
+import torch
 from datetime import datetime
 from box import Box
 from src.datamodule import CCDataModule
@@ -24,7 +24,9 @@ for param, value in cfg.items():
     print(f'\t{param}: {value}')
 
 if not os.path.exists(cfg.ckp_path):
-    os.makedirs(cfg.ckp_path)    
+    os.makedirs(cfg.ckp_path)
+    
+torch.set_float32_matmul_precision('medium')   
 
 print('\nInstantiating datamodule')
 datamodule = CCDataModule(
@@ -71,8 +73,8 @@ trainer = get_trainer(
     n_epochs=cfg.epochs, 
     logger=logger, 
     callbacks=callbacks,
-    compute=cfg.compute if cuda.is_available() else 'cpu',
-    devices=[cfg.devices] if cuda.is_available() else None,
+    compute=cfg.compute if torch.cuda.is_available() else 'cpu',
+    devices=[cfg.devices] if torch.cuda.is_available() else None,
 )
 trainer.fit(model=module, datamodule=datamodule)
 

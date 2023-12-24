@@ -33,7 +33,7 @@ class CCDataModule(pl.LightningDataModule):
         """Prepare filepaths and GTs for train, val and test sets. Filepaths are lists of filepath strings,
         GTs are list of strings (e.g. ['angular', 'bent', 'bent', 'straight', 'angular', ...]).        
         They will be used by the `setup` function to instantiate the datasets."""
-        filepaths = [os.path.join(self.image_path, fp) for fp in os.listdir(self.image_path)]
+        filepaths = sorted([os.path.join(self.image_path, fp) for fp in os.listdir(self.image_path)])
         gts = self.df.GT.to_list()
 
         train_filepaths, val_filepaths, train_gts, val_gts = train_test_split(
