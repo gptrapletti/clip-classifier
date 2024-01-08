@@ -28,14 +28,14 @@ class CCModule(pl.LightningModule):
         self.loss_fn = nn.CrossEntropyLoss()
         self.metric = Accuracy(task='multiclass', num_classes=3)
 
-    def forward(self, x):
-        x = self.encoder(x)
-        x = self.classifier(x)
-        return x
+    def forward(self, x, captions):
+        y = self.encoder(x, captions)
+        z = self.classifier(y)
+        return z
 
     def training_step(self, batch, batch_idx):
-        images, gts = batch
-        preds = self(images)
+        images, gts, captions = batch
+        preds = self(images, captions)
         loss = self.loss_fn(input=preds, target=gts)
         metric = self.metric(
             preds=torch.argmax(preds, dim=1), # from one-hot to labels [2, 0, 1, ...]
@@ -46,15 +46,18 @@ class CCModule(pl.LightningModule):
         return loss
 
     def validation_step(self, batch, batch_idx):
-        images, gts = batch
-        preds = self(images)
+        images, gts, captions = batch
+        preds = self(images, captions)
         loss = self.loss_fn(input=preds, target=gts)
         metric = self.metric(
             preds=torch.argmax(preds, dim=1),
             target=torch.argmax(gts, dim=1)
         )
-        self.log('val_loss', loss, prog_bar=True)
-        self.log('val_metric', metric, prog_bar=True)
+        self.log('val_loss', loss, prog_bar=True, batch_size=images.shape[0])
+        self.log('val_metric', metric, prog_bar=True, batch_size=images.shape[0])
+        # specification of batch size in self.log was needed after adding captions, for some sort of bug,
+        # overwise validation batch size becomes different from what set in the configs
+        # https://github.com/Lightning-AI/pytorch-lightning/issues/10349
         return loss
 
     def test_step(self, batch, batch_idx):
@@ -67,8 +70,8 @@ class CCModule(pl.LightningModule):
         self.log('test_metric', metric, prog_bar=True)
         
     def predict_step(self, batch, batch_idx):
-        images, gts = batch
-        preds = self(images)
+        images, gts, captions = batch
+        preds = self(images, captions)
         return preds
 
     def configure_optimizers(self):
@@ -86,7 +89,7 @@ class CCModule(pl.LightningModule):
         scheduler = ReduceLROnPlateau(optimizer, **configs)
         return scheduler
     
-    def evaluate(self, datamodule, device):
+    def evaluate(self, datamodule, device): # device should be passed manually when manually calling this function
         datamodule.prepare_data()
         datamodule.setup('train')
         dl = datamodule.val_dataloader()
@@ -94,9 +97,9 @@ class CCModule(pl.LightningModule):
         
         pred_labels, gt_labels = [], []
         for i, batch in enumerate(dl):
-            images, gts = batch
+            images, gts, captions = batch
             batch = [images.to(device), gts]
-            preds = self.predict_step(batch, i)
+            preds = self.predict_step(batch=batch, batch_idx=i)
             pred_labels += torch.argmax(preds, axis=1).detach().cpu().numpy().tolist() # [1, 0, 2, 2, ...]
             gt_labels += torch.argmax(gts, axis=1).detach().cpu().numpy().tolist()
 

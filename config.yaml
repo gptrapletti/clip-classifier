@@ -1,29 +1,33 @@
-encoder_name: resnet_50 # clip_base | clip_large | resnet_50
-unfreeze: 65
-epochs: 100
-lr: 0.01 # clip_base: 0.001, clip_large: 0.0001, resnet_50: 0.001
+encoder_name: clip_base # clip_base | clip_large | resnet_50
+multimod: True
+multimod_strategy: avg # add | mul | avg
+unfreeze: 0
+epochs: 50
+lr: 0.001 # clip_base: 0.001, clip_large: 0.0001, resnet_50: 0.001
 
-# image_path: data/stairs_dataset_20231219/stairs_dataset
-# gt_path: data/stairs_dataset_20231219/stairs_dataset_annotation.csv
-image_path: data/caltech256_subset/caltech256_subset
-gt_path: data/caltech256_subset/caltech256_subset_annotation.csv
-batch_size: 32
+image_path: data/stairs_dataset_20231219/stairs_dataset
+gt_path: data/stairs_dataset_20231219/stairs_dataset_annotation.csv
+caption_path: data/stairs_dataset_20231219/stairs_dataset_captions_dummy.csv
+# image_path: data/caltech256_subset/caltech256_subset
+# gt_path: data/caltech256_subset/caltech256_subset_annotation.csv
+
+batch_size: 16
 val_size: 0.15
 test_size: None
 seed: 42 
 
-run_name: DATETIME_enc:resnet_caltech_pretrained:no
+run_name: DATETIME_enc:clip-base_classifier:large_multimod:true_strategy:avg
 experiment_name: clip-classifier
 ckp_path: checkpoints/DATETIME
 # best_ckp_path: checkpoints/20231221-161459/epoch=4.ckpt # DGX
-best_ckp_path: checkpoints/20231222-224530/epoch=4.ckpt # LEGION
+# best_ckp_path: checkpoints/20231222-224530/epoch=4.ckpt # LEGION
+best_ckp_path: checkpoints/20240108-163101/epoch=49.ckpt # DGX, multimod
 
-compute: gpu
-devices: 0
+gpu_device: 3
 
 scheduler:
   mode: min
-  factor: 0.1
-  patience: 10
+  factor: 0.5
+  patience: 15
   threshold: 0.0001
   threshold_mode: rel

@@ -13,6 +13,7 @@ class CCDataModule(pl.LightningDataModule):
         encoder_name,
         image_path,
         gt_path,
+        caption_path,
         val_size,
         test_size,
         batch_size,
@@ -22,11 +23,13 @@ class CCDataModule(pl.LightningDataModule):
         self.encoder_name = encoder_name
         self.image_path = image_path
         self.gt_path = gt_path
+        self.caption_path = caption_path
         self.val_size = val_size
         self.test_size = test_size
         self.batch_size = batch_size
         self.seed = seed
-        self.df = pd.read_csv(gt_path)
+        self.gt_df = pd.read_csv(gt_path)
+        self.caption_df = pd.read_csv(caption_path)
         self.clipclass_transforms = CCTransforms(encoder_name=self.encoder_name)
 
     def prepare_data(self):
@@ -34,18 +37,20 @@ class CCDataModule(pl.LightningDataModule):
         GTs are list of strings (e.g. ['angular', 'bent', 'bent', 'straight', 'angular', ...]).        
         They will be used by the `setup` function to instantiate the datasets."""
         filepaths = sorted([os.path.join(self.image_path, fp) for fp in os.listdir(self.image_path)])
-        gts = self.df.GT.to_list()
+        gts = self.gt_df.GT.to_list()
+        captions = self.caption_df.caption.to_list()
 
-        train_filepaths, val_filepaths, train_gts, val_gts = train_test_split(
+        train_filepaths, val_filepaths, train_gts, val_gts, train_captions, val_captions = train_test_split(
             filepaths,
             gts,
+            captions,
             test_size=self.val_size,
             stratify=gts,
             random_state=self.seed
         )
 
-        self.train_filepaths, self.train_gts = train_filepaths, train_gts
-        self.val_filepaths, self.val_gts = val_filepaths, val_gts
+        self.train_filepaths, self.train_gts, self.train_captions = train_filepaths, train_gts, train_captions
+        self.val_filepaths, self.val_gts, self.val_captions = val_filepaths, val_gts, val_captions
         # self.test_filepaths, self.test_gts = test_filepaths, test_gts
 
     def setup(self, stage):
@@ -53,31 +58,27 @@ class CCDataModule(pl.LightningDataModule):
         if stage in ['fit', 'train']:
             self.train_dataset = CCDataset(
                 filepaths=self.train_filepaths, 
-                gts=self.train_gts, 
+                gts=self.train_gts,
+                captions=self.train_captions, 
                 transforms=self.clipclass_transforms.train_transforms
             )
             self.val_dataset = CCDataset(
                 filepaths=self.val_filepaths,
-                gts=self.val_gts, 
+                gts=self.val_gts,
+                captions=self.val_captions,
                 transforms=self.clipclass_transforms.test_transforms
             )
 
         if stage == 'test':
             raise NotImplementedError("Predicting is not implemented yet.")
-        
-            # self.test_dataset = CCDataset(
-            #     filepaths=self.test_filepaths, 
-            #     gts=self.test_gts, 
-            #     transforms=self.clipclass_transforms.test_transforms
-            # )
 
         if stage == 'predict':
-            # raise NotImplementedError("Predicting is not implemented yet.")
             # Prediction is done on the validation set
             self.predict_filepaths = self.val_filepaths
             self.predict_dataset = CCDataset(
                 filepaths=self.val_filepaths,
                 gts=self.val_gts, 
+                captions=self.val_captions,
                 transforms=self.clipclass_transforms.test_transforms
             )
 

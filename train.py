@@ -33,17 +33,21 @@ datamodule = CCDataModule(
     encoder_name=cfg.encoder_name,
     image_path=cfg.image_path,
     gt_path=cfg.gt_path,
+    caption_path=cfg.caption_path,
     val_size=cfg.val_size,
     test_size=cfg.test_size,
     batch_size=cfg.batch_size,
     seed=cfg.seed,
 )
 
+os.environ['TOKENIZERS_PARALLELISM'] = 'true'
+
 print('\nInstantiating encoder')
-encoder = instantiate_encoder(cfg.encoder_name, cfg.unfreeze)
+encoder = instantiate_encoder(cfg.encoder_name, cfg.multimod, cfg.multimod_strategy, cfg.unfreeze, cfg.gpu_device)
 
 print('\nInstantiating downstream classifier')
 classifier = CCClassifierSmall(encoder_name=cfg.encoder_name)
+# classifier = CCClassifierLarge(encoder_name=cfg.encoder_name)
 
 print('\nInstantiating Lightning module')
 module = CCModule(
@@ -73,8 +77,7 @@ trainer = get_trainer(
     n_epochs=cfg.epochs, 
     logger=logger, 
     callbacks=callbacks,
-    compute=cfg.compute if torch.cuda.is_available() else 'cpu',
-    devices=[cfg.devices] if torch.cuda.is_available() else None,
+    gpu_device=cfg.gpu_device,
 )
 trainer.fit(model=module, datamodule=datamodule)
 

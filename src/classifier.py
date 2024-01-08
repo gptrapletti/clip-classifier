@@ -31,12 +31,15 @@ class CCClassifierLarge(CCClassifierBase):
     def backbone(self):
         backbone = nn.Sequential(
             nn.Linear(in_features=self.input_features, out_features=256),
+            nn.BatchNorm1d(256),
             nn.ReLU(),
             nn.Dropout(p=0.3),
             nn.Linear(in_features=256, out_features=128),
+            nn.BatchNorm1d(128),
             nn.ReLU(),
             nn.Dropout(p=0.3),
             nn.Linear(in_features=128, out_features=64),
+            nn.BatchNorm1d(64),
             nn.ReLU(),
             nn.Dropout(p=0.3),
             nn.Linear(in_features=64, out_features=3)
@@ -50,7 +53,7 @@ class CCClassifierSmall(CCClassifierBase):
     def backbone(self):
         backbone = nn.Sequential(
             nn.Linear(in_features=self.input_features, out_features=128),
-            # nn.BatchNorm1d(128),
+            nn.BatchNorm1d(128),
             nn.ReLU(),
             nn.Dropout(p=0.5),
             nn.Linear(in_features=128, out_features=3)

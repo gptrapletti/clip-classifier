@@ -3,13 +3,27 @@ from pytorch_lightning.utilities.exceptions import _TunerExitException
 
 from src.encoder import CLIPEncoder, ResNetEncoder
 
-def instantiate_encoder(encoder_name, n_layers_to_unfreeze):
+def instantiate_encoder(encoder_name, multimod, multimod_strategy, n_layers_to_unfreeze, gpu_device):
     '''Takes the encoder name and number of layers to unfreeze from the end and returns
     the encoder.'''
     if encoder_name == 'clip_base':
-        encoder = CLIPEncoder(version=encoder_name, n_layers_to_unfreeze=n_layers_to_unfreeze)
+        encoder = CLIPEncoder(
+            version=encoder_name, 
+            multimod=multimod, 
+            multimod_strategy=multimod_strategy, 
+            n_layers_to_unfreeze=n_layers_to_unfreeze, 
+            gpu_device=gpu_device
+        )
+
     elif encoder_name == 'clip_large':
-        encoder = CLIPEncoder(version=encoder_name, n_layers_to_unfreeze=n_layers_to_unfreeze)
+        encoder = CLIPEncoder(
+            version=encoder_name, 
+            multimod=multimod, 
+            multimod_strategy=multimod_strategy, 
+            n_layers_to_unfreeze=n_layers_to_unfreeze,
+            gpu_device=gpu_device
+        )
+        
     elif encoder_name == 'resnet_50':
         encoder = ResNetEncoder(pretrained=True, n_layers_to_unfreeze=n_layers_to_unfreeze)
 

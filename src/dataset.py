@@ -5,9 +5,10 @@ from torch.utils.data import Dataset
 
 class CCDataset(Dataset):
     '''Dataset class for CLIP Classifier.'''
-    def __init__(self, filepaths, gts, transforms=None):
+    def __init__(self, filepaths, gts, captions, transforms=None):
         self.filepaths = filepaths
         self.gts = gts
+        self.captions = captions
         self.transforms = transforms
 
     def __len__(self):
@@ -17,11 +18,12 @@ class CCDataset(Dataset):
         image = cv2.imread(self.filepaths[idx])
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         label = self.from_gt_to_ohe(self.gts[idx])
+        caption = self.captions[idx]
 
         if self.transforms:
             image = self.transforms(image=image)['image']
 
-        return image, label
+        return image, label, caption
         
     def from_gt_to_ohe(self, gt):
         '''Turns a GT from a string into a one-hot encoded tensor.
