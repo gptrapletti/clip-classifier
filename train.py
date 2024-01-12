@@ -46,8 +46,8 @@ print('\nInstantiating encoder')
 encoder = instantiate_encoder(cfg.encoder_name, cfg.multimod, cfg.multimod_strategy, cfg.unfreeze, cfg.gpu_device)
 
 print('\nInstantiating downstream classifier')
-classifier = CCClassifierSmall(encoder_name=cfg.encoder_name)
-# classifier = CCClassifierLarge(encoder_name=cfg.encoder_name)
+# classifier = CCClassifierSmall(encoder_name=cfg.encoder_name)
+classifier = CCClassifierLarge(encoder_name=cfg.encoder_name)
 
 print('\nInstantiating Lightning module')
 module = CCModule(

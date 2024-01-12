@@ -7,7 +7,7 @@ lr: 0.001 # clip_base: 0.001, clip_large: 0.0001, resnet_50: 0.001
 
 image_path: data/stairs_dataset_20231219/stairs_dataset
 gt_path: data/stairs_dataset_20231219/stairs_dataset_annotation.csv
-caption_path: data/stairs_dataset_20231219/stairs_dataset_captions_dummy.csv
+caption_path: data/stairs_dataset_20231219/stairs_dataset_caption.csv
 # image_path: data/caltech256_subset/caltech256_subset
 # gt_path: data/caltech256_subset/caltech256_subset_annotation.csv
 
@@ -23,7 +23,7 @@ ckp_path: checkpoints/DATETIME
 # best_ckp_path: checkpoints/20231222-224530/epoch=4.ckpt # LEGION
 best_ckp_path: checkpoints/20240108-163101/epoch=49.ckpt # DGX, multimod
 
-gpu_device: 3
+gpu_device: 0
 
 scheduler:
   mode: min

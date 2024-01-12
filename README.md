@@ -41,4 +41,5 @@ The dataset comprises images of staircases, representing a specific domain that 
         - 100: no train
 
 
-TODO: report for the different models. Try resnet + large decoder! 
+TODO: 
+- Move tensor creation from caption str from encoder's forward to dataset 
