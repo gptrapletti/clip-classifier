@@ -42,4 +42,9 @@ The dataset comprises images of staircases, representing a specific domain that 
 
 
 TODO: 
-- Move tensor creation from caption str from encoder's forward to dataset 
+- Move tensor creation from caption str from encoder's forward to dataset.
+- add possibility to switch classifier type by configs.
+- move caption shortening in data preparation.
+- do caption shortening by removing stopwords.
+- add normalization after combining visual and textual embeddings, following CLIP paper.
+- try captions from GPT-4V with option high resolution.

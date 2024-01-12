@@ -46,10 +46,12 @@ print('\nInstantiating encoder')
 encoder = instantiate_encoder(cfg.encoder_name, cfg.multimod, cfg.multimod_strategy, cfg.unfreeze, cfg.gpu_device)
 
 print('\nInstantiating downstream classifier')
+torch.manual_seed(cfg.seed)
 # classifier = CCClassifierSmall(encoder_name=cfg.encoder_name)
 classifier = CCClassifierLarge(encoder_name=cfg.encoder_name)
 
 print('\nInstantiating Lightning module')
+torch.manual_seed(cfg.seed)
 module = CCModule(
     encoder=encoder, 
     classifier=classifier, 
